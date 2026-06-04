@@ -51,7 +51,7 @@ def main():
         if tool_call.function.name == "Read":
             file_path = json.loads(tool_call.function.arguments)["file_path"]
             if os.path.isfile(file_path):
-                with open() as f:
+                with open(file_path) as f:
                     print(f.read(file_path))
 
     # You can use print statements as follows for debugging, they'll be visible when running tests.
