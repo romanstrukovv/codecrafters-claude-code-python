@@ -52,7 +52,7 @@ def main():
             file_path = json.loads(tool_call.function.arguments)["file_path"]
             if os.path.isfile(file_path):
                 with open(file_path) as f:
-                    print(f.read(file_path))
+                    print(f.read())
 
     # You can use print statements as follows for debugging, they'll be visible when running tests.
     print("Logs from your program will appear here!", file=sys.stderr)
