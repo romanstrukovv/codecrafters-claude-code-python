@@ -57,11 +57,13 @@ def main():
                     if os.path.isfile(file_path):
                         with open(file_path) as f:
                             tc_resp = {
-                                "role": tc.function.name,
+                                "role": "tool",
                                 "tool_call_id": tc.id,
                                 "content": f.read(),
                             }
+                            msgs.append(chat.choices[0].message)
                             msgs.append(tc_resp)
+                            print(f"msgs: {msgs}", file=sys.stderr)
         elif chat.choices[0].finish_reason == "stop":
             print(chat.choices[0].message.content)
             return 0
