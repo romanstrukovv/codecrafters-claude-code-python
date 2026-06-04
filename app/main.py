@@ -20,9 +20,8 @@ def main():
     client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
 
     msgs = [{"role": "user", "content": args.p}]
-    in_progress = True
 
-    while in_progress:
+    while True:
         chat = client.chat.completions.create(
             model="anthropic/claude-haiku-4.5",
             messages=msgs,
@@ -50,8 +49,8 @@ def main():
         if not chat.choices or len(chat.choices) == 0:
             raise RuntimeError("no choices in response")
 
-        tool_calls = chat.choices[0].message.tool_calls
-        if tool_calls:
+        if chat.choices[0].finish_reason == "tool_calls":
+            tool_calls = chat.choices[0].message.tool_calls
             for tc in tool_calls:
                 if tc.function.name == "Read":
                     file_path = json.loads(tc.function.arguments)["file_path"]
@@ -63,9 +62,11 @@ def main():
                                 "content": f.read(),
                             }
                             msgs.append(tc_resp)
-        else:
+        elif chat.choices[0].finish_reason == "stop":
             print(chat.choices[0].message.content)
-            in_progress = False
+            return 0
+        else:
+            raise RuntimeError("unknown finish reason")
 
     # # You can use print statements as follows for debugging, they'll be visible when running tests.
     # print("Logs from your program will appear here!", file=sys.stderr)
