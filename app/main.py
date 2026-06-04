@@ -1,6 +1,7 @@
 import argparse
 import os
 import sys
+import json
 
 from openai import OpenAI
 
@@ -48,9 +49,10 @@ def main():
     if chat.choices[0].message.tool_calls:
         tool_call = chat.choices[0].message.tool_calls[0]
         if tool_call.function.name == "Read":
-            if os.path.isfile(tool_call.function.arguments[0][1]):
-                with open(tool_call.function.arguments[0][1]) as f:
-                    print(f.read())
+            file_path = json.loads(tool_call.function.arguments)["file_path"]
+            if os.path.isfile(file_path):
+                with open() as f:
+                    print(f.read(file_path))
 
     # You can use print statements as follows for debugging, they'll be visible when running tests.
     print("Logs from your program will appear here!", file=sys.stderr)
