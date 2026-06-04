@@ -19,7 +19,8 @@ def main():
 
     client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
 
-    msgs = args.p
+    msgs = []
+    msgs.append(args.p)
     in_progress = True
 
     while in_progress:
