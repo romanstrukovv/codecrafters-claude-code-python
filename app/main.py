@@ -19,14 +19,13 @@ def main():
 
     client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
 
-    msgs = []
-    msgs.append(args.p)
+    msgs = [{"role": "user", "content": args.p}]
     in_progress = True
 
     while in_progress:
         chat = client.chat.completions.create(
             model="anthropic/claude-haiku-4.5",
-            messages=[{"role": "user", "content": msgs}],
+            messages=msgs,
             tools=[
                 {
                     "type": "function",
@@ -50,14 +49,6 @@ def main():
 
         if not chat.choices or len(chat.choices) == 0:
             raise RuntimeError("no choices in response")
-
-        # if chat.choices[0].message.tool_calls:
-        #     tool_call = chat.choices[0].message.tool_calls[0]
-        #     if tool_call.function.name == "Read":
-        #         file_path = json.loads(tool_call.function.arguments)["file_path"]
-        #         if os.path.isfile(file_path):
-        #             with open(file_path) as f:
-        #                 f.read()
 
         tool_calls = chat.choices[0].message.tool_calls
         if tool_calls:
