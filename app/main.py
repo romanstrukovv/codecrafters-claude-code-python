@@ -29,7 +29,7 @@ def main():
                 {
                     "type": "function",
                     "function": {
-                        "name": "Read",
+                        "name": "read_tool",
                         "description": "Read and return the contents of a file",
                         "parameters": {
                             "type": "object",
@@ -42,7 +42,28 @@ def main():
                             "required": ["file_path"],
                         },
                     },
-                }
+                },
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "write_tool",
+                        "description": "Write content to a file",
+                        "parameters": {
+                            "type": "object",
+                            "required": ["file_path", "content"],
+                            "properties": {
+                                "file_path": {
+                                    "type": "string",
+                                    "description": "The path of the file to write to",
+                                },
+                                "content": {
+                                    "type": "string",
+                                    "description": "The content to write to the file",
+                                },
+                            },
+                        },
+                    },
+                },
             ],
         )
 
@@ -52,7 +73,7 @@ def main():
         if chat.choices[0].finish_reason == "tool_calls":
             tool_calls = chat.choices[0].message.tool_calls
             for tc in tool_calls:
-                if tc.function.name == "Read":
+                if tc.function.name == "read_tool":
                     file_path = json.loads(tc.function.arguments)["file_path"]
                     if os.path.isfile(file_path):
                         with open(file_path) as f:
@@ -64,6 +85,17 @@ def main():
                             msgs.append(chat.choices[0].message)
                             msgs.append(tc_resp)
                             print(f"msgs: {msgs}", file=sys.stderr)
+                    elif tc.function.name == "write_tool":
+                        file_path = json.loads(tc.function.arguments["file_path"])
+                        with open(file_path, "w") as f:
+                            f.write(tc.function.arguments["content"])
+                            tc_resp = {
+                                "role": "tool",
+                                "tool_call_id": tc.id,
+                                "content": f.read(),
+                            }
+                            msgs.append(chat.choices[0].message)
+                            msgs.append(tc_resp)
         elif chat.choices[0].finish_reason == "stop":
             print(chat.choices[0].message.content)
             return 0
