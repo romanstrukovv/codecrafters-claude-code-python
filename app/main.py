@@ -84,18 +84,19 @@ def main():
                             }
                             msgs.append(chat.choices[0].message)
                             msgs.append(tc_resp)
-                            print(f"msgs: {msgs}", file=sys.stderr)
-                    elif tc.function.name == "write_tool":
-                        file_path = json.loads(tc.function.arguments["file_path"])
-                        with open(file_path, "w") as f:
-                            f.write(tc.function.arguments["content"])
-                            tc_resp = {
-                                "role": "tool",
-                                "tool_call_id": tc.id,
-                                "content": f.read(),
-                            }
-                            msgs.append(chat.choices[0].message)
-                            msgs.append(tc_resp)
+                            print(f"READ msgs: {msgs}", file=sys.stderr)
+                elif tc.function.name == "write_tool":
+                    file_path = json.loads(tc.function.arguments["file_path"])
+                    with open(file_path, "w") as f:
+                        f.write(tc.function.arguments["content"])
+                        tc_resp = {
+                            "role": "tool",
+                            "tool_call_id": tc.id,
+                            "content": f.read(),
+                        }
+                        msgs.append(chat.choices[0].message)
+                        msgs.append(tc_resp)
+                        print(f"WRITE msgs: {msgs}", file=sys.stderr)
         elif chat.choices[0].finish_reason == "stop":
             print(chat.choices[0].message.content)
             return 0
