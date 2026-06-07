@@ -87,7 +87,7 @@ def main():
                             print(f"READ msgs: {msgs}", file=sys.stderr)
                 elif tc.function.name == "write_tool":
                     file_path = json.loads(tc.function.arguments)["file_path"]
-                    with open(file_path, "w") as f:
+                    with open(file_path, "w+") as f:
                         f.write(json.loads(tc.function.arguments)["content"])
                         tc_resp = {
                             "role": "tool",
