@@ -88,7 +88,7 @@ def main():
                 elif tc.function.name == "write_tool":
                     file_path = json.loads(tc.function.arguments)["file_path"]
                     with open(file_path, "w") as f:
-                        f.write(tc.function.arguments["content"])
+                        f.write(json.loads(tc.function.arguments)["content"])
                         tc_resp = {
                             "role": "tool",
                             "tool_call_id": tc.id,
