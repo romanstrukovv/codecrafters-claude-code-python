@@ -2,11 +2,15 @@ import argparse
 import os
 import sys
 import json
+import subprocess
 
 from openai import OpenAI
 
 API_KEY = os.getenv("OPENROUTER_API_KEY")
 BASE_URL = os.getenv("OPENROUTER_BASE_URL", default="https://openrouter.ai/api/v1")
+
+
+# def parse_shell_command(cmd: str) -> [str]:
 
 
 def main():
@@ -50,7 +54,6 @@ def main():
                         "description": "Write content to a file",
                         "parameters": {
                             "type": "object",
-                            "required": ["file_path", "content"],
                             "properties": {
                                 "file_path": {
                                     "type": "string",
@@ -61,6 +64,24 @@ def main():
                                     "description": "The content to write to the file",
                                 },
                             },
+                            "required": ["file_path", "content"],
+                        },
+                    },
+                },
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "shell_tool",
+                        "description": "Execute a Bash command",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "command": {
+                                    "type": "string",
+                                    "description": "The command to execute",
+                                }
+                            },
+                            "required": ["command"],
                         },
                     },
                 },
@@ -97,6 +118,18 @@ def main():
                         msgs.append(chat.choices[0].message)
                         msgs.append(tc_resp)
                         print(f"WRITE msgs: {msgs}", file=sys.stderr)
+                elif tc.function.name == "shell_tool":
+                    cmd = json.reads(tc.function.arguments)["command"]
+                    # command, args = parse_shell_command(cmd)
+                    cmd_exe = subprocess.run(cmd, capture_output=True, text=True)
+                    tc_resp = {
+                        "role": "tool",
+                        "tool_call_id": tc.id,
+                        "content": cmd.exe.stdout,
+                    }
+                    msgs.append(chat.choices[0].message)
+                    msgs.append(tc_resp)
+
         elif chat.choices[0].finish_reason == "stop":
             print(chat.choices[0].message.content)
             return 0
