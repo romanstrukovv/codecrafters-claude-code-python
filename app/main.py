@@ -122,7 +122,7 @@ def main():
                     cmd = json.loads(tc.function.arguments)["command"]
                     # command, args = parse_shell_command(cmd)
                     cmd_exe = subprocess.run(
-                        [sys.executable, cmd], capture_output=True, text=True
+                        [cmd], capture_output=True, text=True, shell=True
                     )
                     tc_resp = {
                         "role": "tool",
