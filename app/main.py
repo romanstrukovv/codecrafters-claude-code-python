@@ -119,13 +119,13 @@ def main():
                         msgs.append(tc_resp)
                         print(f"WRITE msgs: {msgs}", file=sys.stderr)
                 elif tc.function.name == "shell_tool":
-                    cmd = json.reads(tc.function.arguments)["command"]
+                    cmd = json.loads(tc.function.arguments)["command"]
                     # command, args = parse_shell_command(cmd)
                     cmd_exe = subprocess.run(cmd, capture_output=True, text=True)
                     tc_resp = {
                         "role": "tool",
                         "tool_call_id": tc.id,
-                        "content": cmd.exe.stdout,
+                        "content": cmd_exe.stdout,
                     }
                     msgs.append(chat.choices[0].message)
                     msgs.append(tc_resp)
