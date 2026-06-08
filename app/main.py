@@ -10,9 +10,6 @@ API_KEY = os.getenv("OPENROUTER_API_KEY")
 BASE_URL = os.getenv("OPENROUTER_BASE_URL", default="https://openrouter.ai/api/v1")
 
 
-# def parse_shell_command(cmd: str) -> [str]:
-
-
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("-p", required=True)
@@ -120,7 +117,7 @@ def main():
                         print(f"WRITE msgs: {msgs}", file=sys.stderr)
                 elif tc.function.name == "shell_tool":
                     cmd = json.loads(tc.function.arguments)["command"]
-                    # command, args = parse_shell_command(cmd)
+                    print(f"Bash command: {cmd}", file=sys.stderr)
                     cmd_exe = subprocess.run(
                         [cmd], capture_output=True, text=True, shell=True
                     )
