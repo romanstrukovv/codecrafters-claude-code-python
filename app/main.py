@@ -121,7 +121,9 @@ def main():
                 elif tc.function.name == "shell_tool":
                     cmd = json.loads(tc.function.arguments)["command"]
                     # command, args = parse_shell_command(cmd)
-                    cmd_exe = subprocess.run(cmd, capture_output=True, text=True)
+                    cmd_exe = subprocess.run(
+                        [sys.executable, cmd], capture_output=True, text=True
+                    )
                     tc_resp = {
                         "role": "tool",
                         "tool_call_id": tc.id,
